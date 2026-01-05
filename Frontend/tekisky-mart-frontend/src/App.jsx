@@ -5,6 +5,7 @@ import Footer from "./assets/components/Footer";
 import ProtectedRoute from "./assets/components/ProtectedRoute";
 import AdminRoute from "./assets/components/AdminRoute";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminOrders from "./pages/admin/OrdersAdmin";
 
 // Pages
 import Home from "./pages/Home";
@@ -34,6 +35,15 @@ const App = () => {
           element={
             <AdminRoute>
               <AdminUsers />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminRoute>
+              <AdminOrders />
             </AdminRoute>
           }
         />
