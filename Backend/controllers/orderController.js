@@ -55,3 +55,31 @@ export const updateOrderStatus = async (req, res) => {
   res.json(order);
 };
 
+/**
+ * @desc   Get order details by ID
+ * @route  GET /api/orders/:id
+ * @access User/Admin
+ */
+export const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate("user", "name email")
+      .populate("orderItems.product", "name price");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // 🔐 Security: user can see only their own order
+    if (
+      req.user.role !== "admin" &&
+      order.user._id.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const MyOrders = () => {
@@ -12,8 +13,8 @@ const MyOrders = () => {
           "http://localhost:5000/api/orders/my",
           {
             headers: {
-              Authorization: `Bearer ${userInfo.token}`
-            }
+              Authorization: `Bearer ${userInfo.token}`,
+            },
           }
         );
         setOrders(data);
@@ -39,19 +40,23 @@ const MyOrders = () => {
               <th className="border p-2">Total</th>
               <th className="border p-2">Status</th>
               <th className="border p-2">Date</th>
+              <th className="border p-2">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {orders.map(order => (
+            {orders.map((order) => (
               <tr key={order._id}>
                 <td className="border p-2">{order._id}</td>
                 <td className="border p-2">₹{order.totalPrice}</td>
-                <td className="border p-2">
-                  {order.orderStatus}
-                </td>
+                <td className="border p-2">{order.orderStatus}</td>
                 <td className="border p-2">
                   {new Date(order.createdAt).toLocaleDateString()}
+                </td>
+                <td className="border p-2">
+                  <Link to={`/order/${order._id}`} className="text-blue-600">
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}

@@ -19,7 +19,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 // import Dashboard from "./pages/admin/Dashboard";
 import MyOrders from "./pages/MyOrders";
-
+import OrderDetails from "./pages/OrderDetails";
 
 const App = () => {
   return (
@@ -38,6 +38,15 @@ const App = () => {
             <AdminRoute>
               <AdminUsers />
             </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/order/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetails />
+            </ProtectedRoute>
           }
         />
 
