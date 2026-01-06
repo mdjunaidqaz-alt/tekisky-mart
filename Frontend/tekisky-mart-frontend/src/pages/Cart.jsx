@@ -4,7 +4,9 @@ import { CartContext } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { cart, fetchCart, removeItem } = useContext(CartContext);
+  const { cart, fetchCart, removeItem, updateQuantity } =
+  useContext(CartContext);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,41 +32,58 @@ const Cart = () => {
       <h1 className="text-2xl font-bold mb-6">Your Cart</h1>
 
       {cart.items.map((item) => (
-        <div
-          key={item.product._id}
-          className="flex items-center justify-between border-b py-4"
+  <div
+    key={item.product._id}
+    className="flex items-center justify-between border-b py-4"
+  >
+    {/* Product Info */}
+    <div className="flex items-center gap-4">
+      <img
+        src={item.product.images?.[0]}
+        alt={item.product.name}
+        className="w-16 h-16 object-cover rounded"
+      />
+
+      <div>
+        <p className="font-semibold">{item.product.name}</p>
+        <p className="text-sm text-gray-600">
+          ₹{item.product.price} × {item.quantity}
+        </p>
+      </div>
+    </div>
+
+    {/* Price + Quantity */}
+    <div className="flex items-center gap-6">
+      <p className="font-bold">
+        ₹{item.product.price * item.quantity}
+      </p>
+
+      {/* ➖ ➕ Quantity Controls */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() =>
+            updateQuantity(item.product._id, item.quantity - 1)
+          }
+          className="px-2 py-1 border rounded"
         >
-          {/* Product Info */}
-          <div className="flex items-center gap-4">
-            <img
-              src={item.product.images?.[0]}
-              alt={item.product.name}
-              className="w-16 h-16 object-cover rounded"
-            />
+          −
+        </button>
 
-            <div>
-              <p className="font-semibold">{item.product.name}</p>
-              <p className="text-sm text-gray-600">
-                ₹{item.product.price} × {item.quantity}
-              </p>
-            </div>
-          </div>
+        <span>{item.quantity}</span>
 
-          {/* Price + Remove */}
-          <div className="flex items-center gap-4">
-            <p className="font-bold">
-              ₹{item.product.price * item.quantity}
-            </p>
+        <button
+          onClick={() =>
+            updateQuantity(item.product._id, item.quantity + 1)
+          }
+          className="px-2 py-1 border rounded"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  </div>
+))}
 
-            <button
-              onClick={() => removeItem(item.product._id)}
-              className="text-red-500 hover:underline"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      ))}
 
       {/* Footer */}
       <div className="mt-6 flex justify-between items-center">
@@ -76,6 +95,7 @@ const Cart = () => {
         >
           Buy Now
         </button>
+        
       </div>
     </div>
   );
