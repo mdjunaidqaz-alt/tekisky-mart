@@ -10,6 +10,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import { apiLimiter } from "./middleware/rateLimit.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js"
 
 connectDB();
 
@@ -33,6 +34,8 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use(errorHandler);
 app.use("/api/admin", adminRoutes);
+app.use("/api/categories", categoryRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -15,6 +15,17 @@ const EditProduct = () => {
   const [productImages, setProductImages] = useState([]);
   const [images, setImages] = useState(null);
 
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data } = await axios.get("http://localhost:5000/api/categories");
+      setCategories(data);
+    };
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     const fetchProduct = async () => {
       const { data } = await axios.get(
@@ -39,6 +50,8 @@ const EditProduct = () => {
     formData.append("price", price);
     formData.append("stock", stock);
     formData.append("description", description);
+    formData.append("category", category);
+
 
     if (images) {
       for (let i = 0; i < images.length; i++) {
@@ -112,6 +125,20 @@ const EditProduct = () => {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
         />
+
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full border p-2"
+          required
+        >
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat._id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
         <button
           type="submit"

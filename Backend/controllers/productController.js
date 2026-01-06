@@ -42,7 +42,14 @@ export const getProducts = async (req, res) => {
       ? { $text: { $search: req.query.keyword } }
       : {};
 
-    const products = await Product.find(keyword)
+    const categoryFilter = req.query.category
+      ? { category: req.query.category }
+      : {};
+
+    const products = await Product.find({
+      ...keyword,
+      ...categoryFilter
+    })
       .populate("category", "name")
       .skip(skip)
       .limit(limit);
@@ -53,6 +60,7 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 export const deleteProduct = async (req, res) => {
