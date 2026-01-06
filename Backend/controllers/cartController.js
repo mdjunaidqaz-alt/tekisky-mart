@@ -1,30 +1,41 @@
 import Cart from "../models/Cart.js";
 
 export const addToCart = async (req, res) => {
-  const { productId, quantity } = req.body;
+  try {
+    const { product, quantity } = req.body;
 
-  let cart = await Cart.findOne({ user: req.user._id });
-
-  if (!cart) {
-    cart = await Cart.create({
-      user: req.user._id,
-      items: [{ product: productId, quantity }]
-    });
-  } else {
-    const index = cart.items.findIndex(
-      (item) => item.product.toString() === productId
-    );
-
-    if (index > -1) {
-      cart.items[index].quantity += quantity;
-    } else {
-      cart.items.push({ product: productId, quantity });
+    if (!product || !quantity) {
+      return res.status(400).json({ message: "Product and quantity required" });
     }
-    await cart.save();
-  }
 
-  res.json(cart);
+    let cart = await Cart.findOne({ user: req.user._id });
+
+    if (!cart) {
+      cart = await Cart.create({
+        user: req.user._id,
+        items: [{ product, quantity }]
+      });
+    } else {
+      const index = cart.items.findIndex(
+        (item) => item.product.toString() === product
+      );
+
+      if (index > -1) {
+        cart.items[index].quantity += quantity;
+      } else {
+        cart.items.push({ product, quantity });
+      }
+
+      await cart.save();
+    }
+
+    res.json(cart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Add to cart failed" });
+  }
 };
+
 
 export const getCart = async (req, res) => {
   const cart = await Cart.findOne({ user: req.user._id }).populate(
