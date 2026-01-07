@@ -160,23 +160,26 @@ const Navbar = () => {
 
         {/* Right Menu */}
         <div className="flex items-center gap-4">
-          <Link to="/cart" className="relative">
-            🛒Cart
-            {cartCount > 0 && (
-              <span
-                className={`
-        absolute -top-2 -right-2
-        bg-red-600 text-white
-        text-xs w-5 h-5
-        flex items-center justify-center
-        rounded-full
-        ${animate ? "animate-bounce-scale" : ""}
-      `}
-              >
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          {/* 🛒 CART — ONLY FOR USERS (NOT ADMIN) */}
+          {user?.role !== "admin" && (
+            <Link to="/cart" className="relative">
+              🛒 Cart
+              {cartCount > 0 && (
+                <span
+                  className={`
+          absolute -top-2 -right-2
+          bg-red-600 text-white
+          text-xs w-5 h-5
+          flex items-center justify-center
+          rounded-full
+          ${animate ? "animate-bounce-scale" : ""}
+        `}
+                >
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* ADMIN BUTTON (IMPORTANT) */}
           {user?.role === "admin" && (
@@ -194,7 +197,9 @@ const Navbar = () => {
               Login
             </Link>
           )}
-          {user && <Link to="/my-orders">📦 My Orders</Link>}
+          {user && user.role !== "admin" && (
+            <Link to="/my-orders">📦 My Orders</Link>
+          )}
         </div>
       </div>
     </nav>

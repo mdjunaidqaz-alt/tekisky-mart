@@ -1,17 +1,26 @@
-import { useEffect,useContext } from "react";
-// import {  } from "react";
+import { useEffect, useContext } from "react";
 import { CartContext } from "../context/CartContext";
-import { Link, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 const Cart = () => {
   const { cart, fetchCart, removeItem, updateQuantity } =
-  useContext(CartContext);
+    useContext(CartContext);
 
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchCart();
   }, []);
+
+  if (user?.role === "admin") {
+    return (
+      <div className="p-6 text-center text-gray-600">
+        🚫 Cart is available only for customers.
+      </div>
+    );
+  }
 
   if (!cart || cart.items.length === 0) {
     return (
@@ -31,59 +40,68 @@ const Cart = () => {
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Your Cart</h1>
 
-      {cart.items.map((item) => (
-  <div
-    key={item.product._id}
-    className="flex items-center justify-between border-b py-4"
-  >
-    {/* Product Info */}
-    <div className="flex items-center gap-4">
-      <img
-        src={item.product.images?.[0]}
-        alt={item.product.name}
-        className="w-16 h-16 object-cover rounded"
-      />
+      {cart.items
+        .filter((item) => item.product) // ✅ safety
+        .map((item) => (
+          <div
+            key={item.product._id}
+            className="flex items-center justify-between border-b py-4"
+          >
+            {/* Product Info */}
+            <div className="flex items-center gap-4">
+              <img
+                src={item.product.images?.[0]}
+                alt={item.product.name}
+                className="w-16 h-16 object-cover rounded"
+              />
 
-      <div>
-        <p className="font-semibold">{item.product.name}</p>
-        <p className="text-sm text-gray-600">
-          ₹{item.product.price} × {item.quantity}
-        </p>
-      </div>
-    </div>
+              <div>
+                <p className="font-semibold">{item.product.name}</p>
 
-    {/* Price + Quantity */}
-    <div className="flex items-center gap-6">
-      <p className="font-bold">
-        ₹{item.product.price * item.quantity}
-      </p>
+                <p className="text-sm text-gray-600">
+                  ₹{item.product.price} × {item.quantity}
+                </p>
 
-      {/* ➖ ➕ Quantity Controls */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() =>
-            updateQuantity(item.product._id, item.quantity - 1)
-          }
-          className="px-2 py-1 border rounded"
-        >
-          −
-        </button>
+                {/* 👁 VIEW BUTTON */}
+                <Link
+                  to={`/product/${item.product._id}`}
+                  state={{ from: "cart" }} // 👈 IMPORTANT
+                  className="text-blue-600 text-sm hover:underline"
+                >
+                  👁 View
+                </Link>
+              </div>
+            </div>
 
-        <span>{item.quantity}</span>
+            {/* Price + Quantity */}
+            <div className="flex items-center gap-6">
+              <p className="font-bold">₹{item.product.price * item.quantity}</p>
 
-        <button
-          onClick={() =>
-            updateQuantity(item.product._id, item.quantity + 1)
-          }
-          className="px-2 py-1 border rounded"
-        >
-          +
-        </button>
-      </div>
-    </div>
-  </div>
-))}
+              {/* ➖ ➕ Quantity Controls */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() =>
+                    updateQuantity(item.product._id, item.quantity - 1)
+                  }
+                  className="px-2 py-1 border rounded"
+                >
+                  −
+                </button>
 
+                <span>{item.quantity}</span>
+
+                <button
+                  onClick={() =>
+                    updateQuantity(item.product._id, item.quantity + 1)
+                  }
+                  className="px-2 py-1 border rounded"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
 
       {/* Footer */}
       <div className="mt-6 flex justify-between items-center">
@@ -95,7 +113,6 @@ const Cart = () => {
         >
           Buy Now
         </button>
-        
       </div>
     </div>
   );

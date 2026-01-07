@@ -15,12 +15,14 @@ export const placeOrder = async (req, res) => {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    const orderItems = cart.items.map((item) => ({
-      product: item.product._id,
-      name: item.product.name,
-      price: item.product.price,
-      quantity: item.quantity
-    }));
+    const orderItems = cart.items
+      .filter((item) => item.product) // safety
+      .map((item) => ({
+        product: item.product._id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity
+      }));
 
     const totalPrice = orderItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -30,20 +32,21 @@ export const placeOrder = async (req, res) => {
     const order = await Order.create({
       user: req.user._id,
       orderItems,
-      shippingAddress: address,
+      shippingAddress, // ✅ FIXED HERE
       totalPrice,
       orderStatus: "Pending"
     });
 
-    // clear cart
     cart.items = [];
     await cart.save();
 
     res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({ message: "Order creation failed" });
+    console.error("PLACE ORDER ERROR 👉", error);
+    res.status(500).json({ message: error.message });
   }
 };
+
 
 // ==============================
 // GET MY ORDERS

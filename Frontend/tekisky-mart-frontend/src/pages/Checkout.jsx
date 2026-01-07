@@ -13,26 +13,25 @@ const Checkout = () => {
     city: "",
     pincode: "",
     phone: "",
-    location: null // 📍 NEW
+    location: null
   });
 
-  // 📍 USE CURRENT LOCATION
+  // 📍 USE CURRENT LOCATION (NO GOOGLE API)
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported in this browser");
+      alert("Geolocation not supported");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        const { latitude, longitude } = position.coords;
+
         setForm((prev) => ({
           ...prev,
-          location: {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          }
+          address: `Lat: ${latitude}, Lng: ${longitude}`,
+          location: { lat: latitude, lng: longitude }
         }));
-        alert("📍 Current location added");
       },
       () => {
         alert("Location permission denied");
@@ -46,9 +45,10 @@ const Checkout = () => {
         shippingAddress: form
       });
 
-      await fetchCart(); // refresh cart after clearing
+      await fetchCart(); // clear cart
       navigate("/my-orders");
     } catch (error) {
+      console.error(error);
       alert("Order failed");
     }
   };
@@ -83,7 +83,6 @@ const Checkout = () => {
         📍 Use Current Location
       </button>
 
-      {/* OPTIONAL CONFIRMATION */}
       {form.location && (
         <p className="text-sm text-green-600 mb-3">
           Location captured successfully

@@ -2,17 +2,37 @@ import { useEffect, useState } from "react";
 import { getProducts } from "../services/productService";
 import ProductCard from "../assets/components/ProductCard";
 import Toast from "../assets/components/Toast";
-
+import useAuth from "../hooks/useAuth";
+import api from "../services/api";
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [toast, setToast] = useState("");
-
+  const { user } = useAuth();
 useEffect(() => {
   getProducts({}).then((data) => {
     setProducts(data.products); // ✅ extract array
   });
 }, []);
+  const deleteProductHandler = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
 
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/products/${id}`);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+      alert("✅ Product deleted successfully");
+    } catch (error) {
+      alert("❌ Failed to delete product");
+    }
+  };
+  useEffect(() => {
+    api.get("/products").then((res) => {
+      setProducts(res.data.products || []);
+    });
+  }, []);
 
   // 🔔 show toast on add to cart
   const showToast = (message) => {
@@ -31,6 +51,7 @@ useEffect(() => {
             key={p._id}
             product={p}
             showToast={showToast}
+            onDelete={deleteProductHandler} 
           />
         ))}
       </div>
