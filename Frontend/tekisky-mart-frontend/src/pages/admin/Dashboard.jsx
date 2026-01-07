@@ -61,6 +61,9 @@ const Dashboard = () => {
         <Link to="/admin/products" className="block mt-4 text-blue-600">
           📦 Manage Products
         </Link>
+        <Link to="/admin/categories" className="block mt-2 text-blue-600">
+          📂 Manage Categories
+        </Link>
       </div>
     </div>
   );

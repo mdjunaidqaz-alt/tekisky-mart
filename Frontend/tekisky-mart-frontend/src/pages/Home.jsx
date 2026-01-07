@@ -7,9 +7,12 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [toast, setToast] = useState("");
 
-  useEffect(() => {
-    getProducts({}).then(setProducts);
-  }, []);
+useEffect(() => {
+  getProducts({}).then((data) => {
+    setProducts(data.products); // ✅ extract array
+  });
+}, []);
+
 
   // 🔔 show toast on add to cart
   const showToast = (message) => {

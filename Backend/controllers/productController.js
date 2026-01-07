@@ -119,3 +119,27 @@ export const updateProduct = async (req, res) => {
 };
 
 
+// @desc   Product search suggestions
+// @route  GET /api/products/suggestions
+// @access Public
+export const getSearchSuggestions = async (req, res) => {
+  try {
+    const q = req.query.q;
+
+    if (!q) return res.json([]);
+
+    const products = await Product.find(
+      {
+        name: { $regex: q, $options: "i" } // 🔥 KEY FIX
+      },
+      { name: 1 }
+    ).limit(5);
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+

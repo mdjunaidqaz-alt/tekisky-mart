@@ -1,10 +1,20 @@
-import axios from "axios";
+import api from "./api";
 
-const API_URL = "http://localhost:5000/api/products";
+/**
+ * Fetch products with optional filters
+ * @param {Object} params
+ * @param {string} params.keyword
+ * @param {string} params.category
+ * @param {number} params.page
+ */
+export const getProducts = async ({
+  keyword = "",
+  category = "",
+  page = 1
+} = {}) => {
+  const { data } = await api.get("/products", {
+    params: { keyword, category, page }
+  });
 
-export const getProducts = async () => {
-  const { data } = await axios.get(API_URL);
-  return data;
+  return data; 
 };
-
-axios.get("http://localhost:5000/api/products");

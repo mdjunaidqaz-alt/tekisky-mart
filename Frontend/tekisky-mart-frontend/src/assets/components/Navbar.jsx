@@ -3,17 +3,45 @@ import { Link, useNavigate } from "react-router-dom";
 import VoiceSearch from "./VoiceSearch";
 import ProfileDropdown from "./ProfileDropdown";
 import { useCart } from "../../context/CartContext";
-
 import { useEffect, useState } from "react";
+import api from "../../services/api";
+
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { cart } = useCart();
   const [animate, setAnimate] = useState(false);
+  // 🔍 Search state
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
 
   // calculate count safely
   const cartCount = cart?.items?.length || cart?.cartItems?.length || 0;
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await api.get(`/products/suggestions?q=${query}`);
+        setSuggestions(data);
+      } catch (err) {
+        console.error("Suggestion error", err);
+      }
+    }, 300); // debounce
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSearch = (text) => {
+    if (!text.trim()) return;
+    setSuggestions([]);
+    navigate(`/products?keyword=${text}`);
+  };
 
   useEffect(() => {
     if (cartCount > 0) {
@@ -32,17 +60,33 @@ const Navbar = () => {
         </Link>
 
         {/* Search */}
-        <div className="flex items-center gap-2 w-1/2">
+        <div className="relative flex items-center gap-2 w-1/2">
           <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Search products..."
             className="w-full border px-3 py-2 rounded"
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                navigate(`/products?keyword=${e.target.value}`);
-              }
+              if (e.key === "Enter") handleSearch(query);
             }}
           />
+
           <VoiceSearch />
+
+          {/* 🔽 Suggestions Dropdown */}
+          {suggestions.length > 0 && (
+            <div className="absolute top-full left-0 w-full bg-white border rounded shadow z-50">
+              {suggestions.map((item) => (
+                <div
+                  key={item._id}
+                  onClick={() => handleSearch(item.name)}
+                  className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                >
+                  {item.name}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Menu */}

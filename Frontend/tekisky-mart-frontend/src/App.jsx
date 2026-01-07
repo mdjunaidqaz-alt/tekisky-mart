@@ -22,6 +22,7 @@ import Register from "./pages/Register";
 import MyOrders from "./pages/MyOrders";
 import OrderDetails from "./pages/OrderDetails";
 import EditProduct from "./pages/admin/EditProduct";
+import AdminCategories from "./pages/admin/AdminCategories";
 
 const App = () => {
   return (
@@ -43,6 +44,15 @@ const App = () => {
           }
         />
         <Route
+          path="/admin/categories"
+          element={
+            <AdminRoute>
+              <AdminCategories />
+            </AdminRoute>
+          }
+        />
+
+        <Route
           path="/admin/product/:id/edit"
           element={
             <AdminRoute>
@@ -54,7 +64,7 @@ const App = () => {
           path="/admin/products"
           element={
             <AdminRoute>
-              <AdminProducts/>
+              <AdminProducts />
             </AdminRoute>
           }
         />
