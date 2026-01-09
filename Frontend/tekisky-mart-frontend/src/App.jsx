@@ -26,6 +26,7 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminBanners from "./pages/admin/AdminBanners";
 import Categories from "./pages/Categories";
 import AdminRatings from "./pages/admin/AdminRatings";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const App = () => {
   return (
@@ -41,6 +42,8 @@ const App = () => {
         <Route path="/admin/banners" element={<AdminBanners />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/admin/ratings" element={<AdminRatings />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
         <Route
           path="/admin/users"

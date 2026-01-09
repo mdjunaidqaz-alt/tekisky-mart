@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
+import crypto from "crypto";
+import sendEmail from "../utils/sendEmail.js";
 
 /**
  * @desc   Register new user (Customer)
@@ -80,4 +82,75 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+
+
+
+// ==============================
+// FORGOT PASSWORD
+// ==============================
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // generate token
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  // hash token
+  user.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 mins
+
+  await user.save();
+
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+  const message = `
+    You requested a password reset.
+    Click the link below to reset your password:
+    
+    ${resetUrl}
+    
+    This link expires in 15 minutes.
+  `;
+
+  await sendEmail(user.email, "Password Reset", message);
+
+  res.json({ message: "Reset link sent to email" });
+};
+
+
+// ==============================
+// RESET PASSWORD
+// ==============================
+export const resetPassword = async (req, res) => {
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpire: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    return res.status(400).json({ message: "Token invalid or expired" });
+  }
+
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+
+  await user.save();
+
+  res.json({ message: "Password reset successful" });
 };

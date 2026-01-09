@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const { login } = useAuth();
@@ -9,7 +9,7 @@ const Login = () => {
 
   const [form, setForm] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -64,7 +64,12 @@ const Login = () => {
           Login
         </button>
       </form>
-      <span><Link to="/register">Sign Up</Link> </span>
+      <span>
+        <Link to="/register">Sign Up</Link>{" "}
+      </span>
+      <Link to="/forgot-password" className="text-sm text-blue-600">
+        Forgot password?
+      </Link>
     </div>
   );
 };
