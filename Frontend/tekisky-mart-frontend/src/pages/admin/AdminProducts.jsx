@@ -6,7 +6,6 @@ const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  // 🔹 FETCH PRODUCTS
   useEffect(() => {
     const fetchProducts = async () => {
       const { data } = await axios.get("http://localhost:5000/api/products");
@@ -16,7 +15,6 @@ const AdminProducts = () => {
     fetchProducts();
   }, []);
 
-  // 🔥 DELETE PRODUCT (CORRECT PLACE)
   const deleteProductHandler = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product?"
@@ -31,7 +29,6 @@ const AdminProducts = () => {
         },
       });
 
-      // update UI instantly
       setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch (error) {
       alert("Failed to delete product");
@@ -39,67 +36,87 @@ const AdminProducts = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Products</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8 animate-fadeInUp">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">
+        Admin Products
+      </h1>
 
-      <table className="w-full border">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border p-2">Image</th>
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Description</th>
-            <th className="border p-2">Price</th>
-            <th className="border p-2">Stock</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {products.map((product) => (
-            <tr key={product._id} className="align-top">
-              {/* Image */}
-              <td className="border p-2">
-                <img
-                  src={product.images?.[0]}
-                  alt={product.name}
-                  className="w-20 h-20 object-cover rounded"
-                />
-              </td>
-
-              {/* Name */}
-              <td className="border p-2 font-medium">{product.name}</td>
-
-              {/* Description */}
-              <td className="border p-2 text-sm text-gray-600 max-w-xs">
-                {product.description}
-              </td>
-
-              {/* Price */}
-              <td className="border p-2">₹{product.price}</td>
-
-              {/* Stock */}
-              <td className="border p-2">{product.stock}</td>
-
-              {/* Actions */}
-              <td className="border p-2 space-y-2">
-                <Link
-                  to={`/admin/product/${product._id}/edit`}
-                  className="block bg-yellow-500 text-white px-3 py-1 rounded text-center"
-                >
-                  ✏️ Edit
-                </Link>
-
-                <button
-                  onClick={() => deleteProductHandler(product._id)}
-                  className="block w-full bg-red-600 text-white px-3 py-1 rounded"
-                >
-                  ❌ Delete
-                </button>
-              </td>
+      {/* TABLE WRAPPER (RESPONSIVE) */}
+      <div className="overflow-x-auto bg-white border rounded-xl shadow-sm">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="px-4 py-3 text-left">Image</th>
+              <th className="px-4 py-3 text-left">Name</th>
+              <th className="px-4 py-3 text-left hidden md:table-cell">
+                Description
+              </th>
+              <th className="px-4 py-3 text-left">Price</th>
+              <th className="px-4 py-3 text-left">Stock</th>
+              <th className="px-4 py-3 text-left">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody className="divide-y">
+            {products.map((product) => (
+              <tr
+                key={product._id}
+                className="hover:bg-gray-50 transition"
+              >
+                {/* IMAGE */}
+                <td className="px-4 py-3">
+                  <img
+                    src={product.images?.[0]}
+                    alt={product.name}
+                    className="w-16 h-16 object-cover rounded-lg"
+                  />
+                </td>
+
+                {/* NAME */}
+                <td className="px-4 py-3 font-medium text-gray-800">
+                  {product.name}
+                </td>
+
+                {/* DESCRIPTION (HIDDEN ON MOBILE) */}
+                <td className="px-4 py-3 text-gray-600 max-w-xs hidden md:table-cell">
+                  {product.description}
+                </td>
+
+                {/* PRICE */}
+                <td className="px-4 py-3 font-medium">
+                  ₹{product.price}
+                </td>
+
+                {/* STOCK */}
+                <td className="px-4 py-3">
+                  {product.stock}
+                </td>
+
+                {/* ACTIONS */}
+                <td className="px-4 py-3">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Link
+                      to={`/admin/product/${product._id}/edit`}
+                      className="bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-center text-sm hover:bg-yellow-600 transition"
+                    >
+                      ✏️ Edit
+                    </Link>
+
+                    <button
+                      onClick={() =>
+                        deleteProductHandler(product._id)
+                      }
+                      className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition"
+                    >
+                      ❌ Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

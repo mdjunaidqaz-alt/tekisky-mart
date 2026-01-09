@@ -7,17 +7,17 @@ import api from "../services/api";
 import QuickCategories from "../assets/components/QuickCategories";
 import HeroSlider from "./HeroSlider";
 
-
-
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [toast, setToast] = useState("");
   const { user } = useAuth();
-useEffect(() => {
-  getProducts({}).then((data) => {
-    setProducts(data.products); // ✅ extract array
-  });
-}, []);
+
+  useEffect(() => {
+    getProducts({}).then((data) => {
+      setProducts(data.products);
+    });
+  }, []);
+
   const deleteProductHandler = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this product?"
@@ -33,13 +33,13 @@ useEffect(() => {
       alert("❌ Failed to delete product");
     }
   };
+
   useEffect(() => {
     api.get("/products").then((res) => {
       setProducts(res.data.products || []);
     });
   }, []);
 
-  // 🔔 show toast on add to cart
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(""), 2500);
@@ -47,21 +47,43 @@ useEffect(() => {
 
   return (
     <>
-      {/* Toast popup */}
+      {/* TOAST */}
       <Toast message={toast} />
-      <QuickCategories/>
-      
-      <HeroSlider/>
 
-      <div className="max-w-7xl mx-auto p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-        {products.map((p) => (
-          <ProductCard
-            key={p._id}
-            product={p}
-            showToast={showToast}
-            onDelete={deleteProductHandler} 
-          />
-        ))}
+      {/* QUICK CATEGORIES */}
+      <div className="mt-4">
+        <QuickCategories />
+      </div>
+
+      {/* HERO SLIDER */}
+      <HeroSlider />
+
+      {/* PRODUCTS SECTION */}
+      <div className="max-w-7xl mx-auto px-4 py-10">
+        <h2 className="text-xl sm:text-2xl font-bold mb-6 text-gray-800">
+          Latest Products
+        </h2>
+
+        <div
+          className="
+            grid
+            grid-cols-2
+            sm:grid-cols-3
+            md:grid-cols-4
+            lg:grid-cols-5
+            gap-4
+            sm:gap-6
+          "
+        >
+          {products.map((p) => (
+            <ProductCard
+              key={p._id}
+              product={p}
+              showToast={showToast}
+              onDelete={deleteProductHandler}
+            />
+          ))}
+        </div>
       </div>
     </>
   );

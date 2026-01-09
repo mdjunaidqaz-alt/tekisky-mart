@@ -30,7 +30,6 @@ const OrderDetails = () => {
 
       alert("Order cancelled successfully");
 
-      // update UI instantly
       setOrder((prev) => ({
         ...prev,
         orderStatus: "Cancelled",
@@ -56,114 +55,147 @@ const OrderDetails = () => {
     fetchOrder();
   }, [id]);
 
-  if (!order) return <p className="p-6">Loading invoice...</p>;
+  if (!order)
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center text-gray-500">
+        Loading invoice...
+      </div>
+    );
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow">
-      <h1 className="text-2xl font-bold mb-4">Order Invoice</h1>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="bg-white border rounded-xl shadow-sm p-6">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">
+          Order Invoice
+        </h1>
 
-      {/* Order Info */}
-      <div className="mb-6">
-        <p>
-          <strong>Order ID:</strong> {order._id}
-        </p>
-        <p>
-          <strong>Date:</strong>{" "}
-          {new Date(order.createdAt).toLocaleDateString()}
-        </p>
-
-        {/* Order Progress */}
-        <OrderStatusTracker status={order.orderStatus} />
-
-        {/* Estimated Delivery Date */}
-        {order.estimatedDeliveryDate && order.orderStatus !== "Delivered" && (
-          <p className="mt-3 text-green-700 font-medium">
-            🚚 Estimated Delivery:{" "}
-            {new Date(order.estimatedDeliveryDate).toDateString()}
+        {/* ORDER INFO */}
+        <div className="space-y-2 mb-6 text-sm text-gray-700">
+          <p>
+            <span className="font-semibold">Order ID:</span> #{order._id}
           </p>
-        )}
+          <p>
+            <span className="font-semibold">Date:</span>{" "}
+            {new Date(order.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+
+        {/* STATUS TRACKER */}
+        <div className="mb-6">
+          <OrderStatusTracker status={order.orderStatus} />
+        </div>
+
+        {/* DELIVERY INFO */}
+        {order.estimatedDeliveryDate &&
+          order.orderStatus !== "Delivered" && (
+            <p className="mb-4 text-green-700 font-medium text-sm">
+              🚚 Estimated Delivery:{" "}
+              {new Date(order.estimatedDeliveryDate).toDateString()}
+            </p>
+          )}
 
         {order.orderStatus === "Delivered" && (
-          <p className="mt-3 text-green-700 font-semibold">
+          <p className="mb-4 text-green-700 font-semibold text-sm">
             ✅ Delivered Successfully
           </p>
         )}
-      </div>
-      {/* ⭐ RATING SECTION */}
-      {order.orderStatus === "Delivered" && (
-        <div className="mt-8 border-t pt-6">
-          <h2 className="text-lg font-semibold mb-4">⭐ Rate your products</h2>
 
-          {order.orderItems.map((item) => (
-            <RatingForm key={item.product?._id} productId={item.product?._id} />
-          ))}
+        {/* STATUS BADGE */}
+        <div className="mb-6">
+          <span
+            className={`inline-block px-4 py-1 rounded-full text-xs font-semibold ${
+              order.orderStatus === "Cancelled"
+                ? "bg-red-100 text-red-600"
+                : "bg-green-100 text-green-600"
+            }`}
+          >
+            {order.orderStatus}
+          </span>
         </div>
-      )}
 
-      <p>
-        <strong>Status:</strong>{" "}
-        <span
-          className={
-            order.orderStatus === "Cancelled"
-              ? "text-red-600 font-semibold"
-              : "text-green-600 font-semibold"
-          }
-        >
-          {order.orderStatus}
-        </span>
-      </p>
+        {/* CANCEL BUTTON */}
+        {["Pending", "Processing"].includes(order.orderStatus) && (
+          <button
+            onClick={cancelOrderHandler}
+            className="
+              mb-6
+              bg-red-600
+              text-white
+              px-5
+              py-2
+              rounded-lg
+              text-sm
+              hover:bg-red-700
+              transition
+            "
+          >
+            Cancel Order
+          </button>
+        )}
 
-      {/* ❌ CANCEL BUTTON */}
-      {["Pending", "Processing"].includes(order.orderStatus) && (
-        <button
-          onClick={cancelOrderHandler}
-          className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-        >
-          Cancel Order
-        </button>
-      )}
+        {/* ⭐ RATING */}
+        {order.orderStatus === "Delivered" && (
+          <div className="mt-8 border-t pt-6 space-y-4">
+            
 
-      {/* Customer Info */}
-      <div className="mb-6">
-        <h2 className="font-semibold mb-2">Customer</h2>
-        <p>{order.user?.name || "Customer"}</p>
-        <p>{order.user?.email || "N/A"}</p>
-      </div>
+            {order.orderItems.map((item) => (
+              <RatingForm
+                key={item.product?._id}
+                productId={item.product?._id}
+              />
+            ))}
+          </div>
+        )}
 
-      {/* Items Table */}
-      <table className="w-full border mb-6">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border p-2">Product</th>
-            <th className="border p-2">Qty</th>
-            <th className="border p-2">Price</th>
-            <th className="border p-2">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          {order.orderItems.map((item, index) => (
-            <tr key={index}>
-              <td className="border p-2">
-                {item.product?.name || "Product removed"}
-              </td>
+        {/* CUSTOMER INFO */}
+        <div className="mt-8 border-t pt-6 text-sm">
+          <h2 className="font-semibold mb-2 text-gray-800">
+            Customer
+          </h2>
+          <p>{order.user?.name || "Customer"}</p>
+          <p className="text-gray-600">
+            {order.user?.email || "N/A"}
+          </p>
+        </div>
 
-              <td className="border p-2">{item.quantity}</td>
+        {/* ITEMS TABLE */}
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full text-sm border rounded-lg overflow-hidden">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 text-left">Product</th>
+                <th className="px-4 py-2 text-left">Qty</th>
+                <th className="px-4 py-2 text-left">Price</th>
+                <th className="px-4 py-2 text-left">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {order.orderItems.map((item, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-4 py-2">
+                    {item.product?.name || "Product removed"}
+                  </td>
+                  <td className="px-4 py-2">
+                    {item.quantity}
+                  </td>
+                  <td className="px-4 py-2">
+                    ₹{item.product?.price ?? item.price}
+                  </td>
+                  <td className="px-4 py-2 font-medium">
+                    ₹
+                    {item.quantity *
+                      (item.product?.price ?? item.price)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-              <td className="border p-2">
-                ₹{item.product?.price ?? item.price}
-              </td>
-
-              <td className="border p-2">
-                ₹{item.quantity * (item.product?.price ?? item.price)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Total */}
-      <div className="text-right text-xl font-bold">
-        Total: ₹{order.totalPrice}
+        {/* TOTAL */}
+        <div className="mt-6 text-right text-lg font-bold">
+          Total: ₹{order.totalPrice}
+        </div>
       </div>
     </div>
   );

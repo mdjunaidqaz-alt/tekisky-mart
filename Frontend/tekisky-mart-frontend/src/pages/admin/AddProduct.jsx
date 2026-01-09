@@ -14,7 +14,6 @@ const AddProduct = () => {
     stock: ""
   });
 
-  // 🔹 Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       const { data } = await api.get("/categories");
@@ -46,29 +45,23 @@ const AddProduct = () => {
 
     const formData = new FormData();
 
-    // text fields
     Object.keys(form).forEach((key) => {
       formData.append(key, form[key]);
     });
 
-    // category (ONLY ONCE)
     formData.append("category", category);
 
-    // images
     for (let i = 0; i < images.length; i++) {
       formData.append("images", images[i]);
     }
 
     try {
       await api.post("/products", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
+        headers: { "Content-Type": "multipart/form-data" }
       });
 
       alert("✅ Product added successfully");
 
-      // reset form
       setForm({
         name: "",
         description: "",
@@ -84,84 +77,105 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Add Product</h1>
-
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Product Name"
-          className="w-full border p-2"
-          required
-        />
-
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Description"
-          className="w-full border p-2"
-          required
-        />
-
-        <input
-          type="number"
-          name="price"
-          value={form.price}
-          onChange={handleChange}
-          placeholder="Price"
-          className="w-full border p-2"
-          required
-        />
-
-        <input
-          type="number"
-          name="discount"
-          value={form.discount}
-          onChange={handleChange}
-          placeholder="Discount %"
-          className="w-full border p-2"
-        />
-
-        <input
-          type="number"
-          name="stock"
-          value={form.stock}
-          onChange={handleChange}
-          placeholder="Stock"
-          className="w-full border p-2"
-          required
-        />
-
-        {/* ✅ CATEGORY DROPDOWN */}
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full border p-2"
-          required
-        >
-          <option value="">Select Category</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-
-        {/* IMAGES */}
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleImageChange}
-        />
-
-        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full">
+    <div className="max-w-2xl mx-auto px-4 py-8 animate-fadeInUp">
+      <div className="bg-white border rounded-xl shadow-sm p-6 sm:p-8">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">
           Add Product
-        </button>
-      </form>
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* PRODUCT NAME */}
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Product Name"
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+
+          {/* DESCRIPTION */}
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="Product Description"
+            rows="4"
+            className="w-full border rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+
+          {/* PRICE / DISCOUNT / STOCK */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <input
+              type="number"
+              name="price"
+              value={form.price}
+              onChange={handleChange}
+              placeholder="Price"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+
+            <input
+              type="number"
+              name="discount"
+              value={form.discount}
+              onChange={handleChange}
+              placeholder="Discount %"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <input
+              type="number"
+              name="stock"
+              value={form.stock}
+              onChange={handleChange}
+              placeholder="Stock"
+              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* CATEGORY */}
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          {/* IMAGES */}
+          <div className="border rounded-lg p-3 text-sm">
+            <label className="block text-gray-600 mb-1">
+              Upload Images (max 3)
+            </label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+              className="text-sm"
+            />
+          </div>
+
+          {/* SUBMIT */}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition active:scale-95"
+          >
+            Add Product
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -40,3 +40,36 @@
 .read-the-docs {
   color: #888;
 }
+
+
+/* CHECKMARK ANIMATION */
+.checkmark svg {
+  stroke: white;
+  stroke-width: 4;
+  stroke-miterlimit: 10;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: draw-circle 0.6s ease-out forwards;
+}
+
+.checkmark-check {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: draw-check 0.3s ease-out forwards;
+  animation-delay: 0.6s;
+}
+
+@keyframes draw-circle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes draw-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

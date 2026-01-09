@@ -16,11 +16,27 @@ const Toast = ({ message }) => {
   return (
     <div className="fixed top-20 right-5 z-50 animate-slide-in">
       <div className="flex items-center gap-3 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg">
-        
-        {/* ✅ Animated Check Icon */}
-        <span className="flex items-center justify-center w-6 h-6 bg-white text-green-600 rounded-full font-bold animate-pop">
-          ✓
-        </span>
+
+        {/* ✅ DRAWING CHECK ICON */}
+        <div className="w-7 h-7">
+          <svg
+            viewBox="0 0 52 52"
+            className="checkmark"
+          >
+            <circle
+              cx="26"
+              cy="26"
+              r="25"
+              fill="none"
+              className="checkmark-circle"
+            />
+            <path
+              fill="none"
+              d="M14 27 l7 7 l17 -17"
+              className="checkmark-check"
+            />
+          </svg>
+        </div>
 
         <span className="text-sm font-medium">{message}</span>
       </div>

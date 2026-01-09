@@ -120,35 +120,36 @@ const Navbar = () => {
     }
   };
 
-  return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+return (
+  <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b">
+    <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-4">
+        
         {/* LOGO */}
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex justify-center md:justify-start">
           <img
             src="/logo.png"
             alt="Tekisky Mart"
-            className="h-14 w-auto object-contain"
+            className="h-12 sm:h-14 w-auto object-contain"
           />
         </Link>
 
         {/* SEARCH */}
-        <div className="relative hidden md:flex items-center gap-2 w-[45%]">
+        <div className="relative w-full md:max-w-xl md:mx-auto">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search for products, brands & more"
-            className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full rounded-full border border-gray-300 pl-4 pr-12 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
 
-          <div className="absolute right-2 flex items-center gap-1">
-            <div>
-              <VoiceSearch />
-            </div>
+          {/* MIC */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <VoiceSearch />
           </div>
 
-          {/* Suggestions */}
+          {/* SUGGESTIONS */}
           {suggestions.length > 0 && (
             <div className="absolute top-12 left-0 w-full bg-white rounded-xl shadow-lg border overflow-hidden z-50">
               {suggestions.map((item, index) => (
@@ -169,15 +170,13 @@ const Navbar = () => {
         </div>
 
         {/* RIGHT MENU */}
-        <div className="flex items-center gap-4 text-sm font-medium">
-          {/* CART */}
+        <div className="flex justify-center md:justify-end items-center gap-3 text-sm font-medium">
           {user?.role !== "admin" && (
             <Link
               to="/cart"
               className="relative flex items-center gap-1 hover:text-blue-600 transition"
             >
-              🛒
-              <span>Cart</span>
+              🛒 <span className="hidden sm:inline">Cart</span>
               {cartCount > 0 && (
                 <span
                   className={`absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full ${
@@ -190,29 +189,26 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* ADMIN */}
           {user?.role === "admin" && (
             <Link
               to="/admin"
-              className="rounded-full bg-black text-white px-4 py-1.5 hover:bg-gray-800 transition"
+              className="rounded-full bg-black text-white px-3 py-1.5 hover:bg-gray-800 transition"
             >
               Admin
             </Link>
           )}
 
-          {/* AUTH */}
           {user ? (
             <ProfileDropdown user={user} onLogout={logout} />
           ) : (
             <Link
               to="/login"
-              className="px-4 py-1.5 rounded-full border hover:bg-gray-100 transition"
+              className="px-3 py-1.5 rounded-full border hover:bg-gray-100 transition"
             >
               Login
             </Link>
           )}
 
-          {/* ORDERS */}
           {user && user.role !== "admin" && (
             <Link
               to="/my-orders"
@@ -222,9 +218,13 @@ const Navbar = () => {
             </Link>
           )}
         </div>
+
       </div>
-    </nav>
-  );
+    </div>
+  </nav>
+);
+
+
 };
 
 export default Navbar;

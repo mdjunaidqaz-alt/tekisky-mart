@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import { Link } from "react-router-dom";
 
 const Login = () => {
   const { login } = useAuth();
@@ -21,55 +20,95 @@ const Login = () => {
 
     try {
       await login(form);
-      navigate("/"); // redirect to home after login
+      navigate("/");
     } catch (err) {
       alert("Invalid email or password");
     }
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md border p-6 rounded shadow"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">
+    <div className="min-h-[70vh] flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white border rounded-xl shadow-sm p-6 sm:p-8">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Login to Tekisky Mart
         </h2>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className="input mb-3"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="
+              w-full
+              border
+              rounded-lg
+              px-3
+              py-2.5
+              text-sm
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          className="input mb-4"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            className="
+              w-full
+              border
+              rounded-lg
+              px-3
+              py-2.5
+              text-sm
+              focus:outline-none
+              focus:ring-2
+              focus:ring-blue-500
+            "
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded"
-        >
-          Login
-        </button>
-      </form>
-      <span>
-        <Link to="/register">Sign Up</Link>{" "}
-      </span>
-      <Link to="/forgot-password" className="text-sm text-blue-600">
-        Forgot password?
-      </Link>
+          <button
+            type="submit"
+            className="
+              w-full
+              bg-blue-600
+              text-white
+              py-2.5
+              rounded-lg
+              font-medium
+              hover:bg-blue-700
+              transition
+              active:scale-95
+            "
+          >
+            Login
+          </button>
+        </form>
+
+        {/* LINKS */}
+        <div className="mt-6 flex items-center justify-between text-sm">
+          <Link
+            to="/register"
+            className="text-blue-600 hover:underline"
+          >
+            Create account
+          </Link>
+
+          <Link
+            to="/forgot-password"
+            className="text-blue-600 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

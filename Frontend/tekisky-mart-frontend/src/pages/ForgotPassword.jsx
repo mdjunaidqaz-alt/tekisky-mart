@@ -14,23 +14,52 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h2 className="text-xl font-bold mb-4">Forgot Password</h2>
+    <div className="min-h-[70vh] flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white border rounded-xl shadow-sm p-6 sm:p-8">
+        <h2 className="text-2xl font-bold mb-2 text-center text-gray-800">
+          Forgot Password
+        </h2>
 
-      <input
-        type="email"
-        placeholder="Enter your email"
-        className="w-full border p-2 mb-3"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <p className="text-sm text-gray-500 text-center mb-6">
+          Enter your registered email to receive a reset link
+        </p>
 
-      <button
-        onClick={submitHandler}
-        className="bg-blue-600 text-white w-full py-2 rounded"
-      >
-        Send Reset Link
-      </button>
+        <input
+          type="email"
+          placeholder="Email address"
+          className="
+            w-full
+            border
+            rounded-lg
+            px-3
+            py-2.5
+            text-sm
+            mb-4
+            focus:outline-none
+            focus:ring-2
+            focus:ring-blue-500
+          "
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <button
+          onClick={submitHandler}
+          className="
+            w-full
+            bg-blue-600
+            text-white
+            py-2.5
+            rounded-lg
+            font-medium
+            hover:bg-blue-700
+            transition
+            active:scale-95
+          "
+        >
+          Send Reset Link
+        </button>
+      </div>
     </div>
   );
 };

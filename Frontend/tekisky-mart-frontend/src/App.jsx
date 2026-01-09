@@ -31,8 +31,9 @@ import ForgotPassword from "./pages/ForgotPassword";
 const App = () => {
   return (
     <>
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-
+  <main className="flex-grow">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
@@ -151,8 +152,9 @@ const App = () => {
           }
         />
       </Routes>
-
+</main>
       <Footer />
+      </div>
     </>
   );
 };

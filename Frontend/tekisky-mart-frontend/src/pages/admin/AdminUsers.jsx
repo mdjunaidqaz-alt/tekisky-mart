@@ -35,50 +35,90 @@ const AdminUsers = () => {
 
     setUsers((prev) =>
       prev.map((user) =>
-        user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
+        user._id === userId
+          ? { ...user, isBlocked: !user.isBlocked }
+          : user
       )
     );
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Customers</h2>
+    <div className="max-w-7xl mx-auto px-4 py-8 animate-fadeInUp">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
+        Customers
+      </h2>
 
-      <table className="w-full border">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Role</th>
-            <th className="border p-2">Joined</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td className="border p-2">{user.name}</td>
-              <td className="border p-2">{user.email}</td>
-              <td className="border p-2">{user.role}</td>
-              <td className="border p-2">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </td>
-              <td className="border p-2">
-                <button
-                  onClick={() => toggleBlock(user._id)}
-                  className={`px-3 py-1 rounded text-white ${
-                    user.isBlocked ? "bg-green-600" : "bg-red-600"
-                  }`}
-                >
-                  {user.isBlocked ? "Unblock" : "Block"}
-                </button>
-              </td>
-              <td className="border p-2">
-                {user.isBlocked ? "🚫 Blocked" : "✅ Active"}
-              </td>
+      {/* TABLE WRAPPER */}
+      <div className="overflow-x-auto bg-white border rounded-xl shadow-sm">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="px-4 py-3 text-left">Name</th>
+              <th className="px-4 py-3 text-left">Email</th>
+              <th className="px-4 py-3 text-left">Role</th>
+              <th className="px-4 py-3 text-left">Joined</th>
+              <th className="px-4 py-3 text-left">Action</th>
+              <th className="px-4 py-3 text-left">Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody className="divide-y">
+            {users.map((user) => (
+              <tr
+                key={user._id}
+                className="hover:bg-gray-50 transition"
+              >
+                {/* NAME */}
+                <td className="px-4 py-3 font-medium text-gray-800">
+                  {user.name}
+                </td>
+
+                {/* EMAIL */}
+                <td className="px-4 py-3 text-gray-600">
+                  {user.email}
+                </td>
+
+                {/* ROLE */}
+                <td className="px-4 py-3 capitalize">
+                  {user.role}
+                </td>
+
+                {/* JOINED */}
+                <td className="px-4 py-3">
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </td>
+
+                {/* ACTION */}
+                <td className="px-4 py-3">
+                  <button
+                    onClick={() => toggleBlock(user._id)}
+                    className={`px-4 py-1.5 rounded-lg text-sm font-medium text-white transition ${
+                      user.isBlocked
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-red-600 hover:bg-red-700"
+                    }`}
+                  >
+                    {user.isBlocked ? "Unblock" : "Block"}
+                  </button>
+                </td>
+
+                {/* STATUS */}
+                <td className="px-4 py-3 font-medium">
+                  {user.isBlocked ? (
+                    <span className="text-red-600">
+                      🚫 Blocked
+                    </span>
+                  ) : (
+                    <span className="text-green-600">
+                      ✅ Active
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

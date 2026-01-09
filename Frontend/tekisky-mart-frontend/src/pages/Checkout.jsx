@@ -16,7 +16,6 @@ const Checkout = () => {
     location: null,
   });
 
-  // 📍 USE CURRENT LOCATION (NO GOOGLE API)
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported");
@@ -26,7 +25,6 @@ const Checkout = () => {
     navigator.geolocation.getCurrentPosition(async (position) => {
       const { latitude, longitude } = position.coords;
 
-      // 🔥 CALL GOOGLE API
       const res = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${
           import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -47,69 +45,112 @@ const Checkout = () => {
     });
   };
 
- const submitOrder = async () => {
-  // 🔴 FRONTEND VALIDATION
-  if (!form.address || form.address.trim() === "") {
-    alert("Please enter delivery address or use current location");
-    return;
-  }
+  const submitOrder = async () => {
+    if (!form.address || form.address.trim() === "") {
+      alert("Please enter delivery address or use current location");
+      return;
+    }
 
-  if (!form.phone || form.phone.trim() === "") {
-    alert("Please enter phone number");
-    return;
-  }
+    if (!form.phone || form.phone.trim() === "") {
+      alert("Please enter phone number");
+      return;
+    }
 
-  try {
-    await placeOrder({
-      shippingAddress: form
-    });
+    try {
+      await placeOrder({
+        shippingAddress: form,
+      });
 
-    await fetchCart();
-    navigate("/my-orders");
-  } catch (error) {
-    alert("Order failed");
-  }
-};
-
+      await fetchCart();
+      navigate("/my-orders");
+    } catch (error) {
+      alert("Order failed");
+    }
+  };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Checkout (Cash on Delivery)</h2>
+    <div className="max-w-xl mx-auto px-4 py-8">
+      <div className="bg-white border rounded-xl shadow-sm p-6 sm:p-8">
+        <h2 className="text-xl font-bold mb-6 text-gray-800">
+          Checkout
+          <span className="block text-sm font-normal text-gray-500 mt-1">
+            Cash on Delivery
+          </span>
+        </h2>
 
-      {Object.keys(form).map(
-        (key) =>
-          key !== "location" && (
-            <input
-              key={key}
-              placeholder={key.toUpperCase()}
-              className="w-full border p-2 mb-3"
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            />
-          )
-      )}
+        {/* FORM FIELDS */}
+        <div className="space-y-4">
+          {Object.keys(form).map(
+            (key) =>
+              key !== "location" && (
+                <input
+                  key={key}
+                  placeholder={key.toUpperCase()}
+                  className="
+                    w-full
+                    border
+                    rounded-lg
+                    px-3
+                    py-2.5
+                    text-sm
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-blue-500
+                  "
+                  value={form[key]}
+                  onChange={(e) =>
+                    setForm({ ...form, [key]: e.target.value })
+                  }
+                />
+              )
+          )}
+        </div>
 
-      {/* 📍 LOCATION BUTTON */}
-      <button
-        type="button"
-        onClick={useCurrentLocation}
-        className="w-full border border-blue-600 text-blue-600 py-2 rounded mb-3"
-      >
-        📍 Use Current Location
-      </button>
+        {/* LOCATION BUTTON */}
+        <button
+          type="button"
+          onClick={useCurrentLocation}
+          className="
+            w-full
+            mt-5
+            border
+            border-blue-600
+            text-blue-600
+            py-2.5
+            rounded-lg
+            font-medium
+            hover:bg-blue-50
+            transition
+          "
+        >
+          📍 Use Current Location
+        </button>
 
-      {form.location && (
-        <p className="text-sm text-green-600 mb-3">
-          Location captured successfully
-        </p>
-      )}
+        {form.location && (
+          <p className="text-sm text-green-600 mt-3">
+            ✅ Location captured successfully
+          </p>
+        )}
 
-      <button
-        onClick={submitOrder}
-        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-      >
-        Place Order
-      </button>
+        {/* SUBMIT */}
+        <button
+          onClick={submitOrder}
+          className="
+            mt-6
+            w-full
+            bg-blue-600
+            text-white
+            py-3
+            rounded-lg
+            font-medium
+            hover:bg-blue-700
+            transition
+            active:scale-95
+          "
+        >
+          Place Order
+        </button>
+      </div>
     </div>
   );
 };
