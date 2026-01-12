@@ -23,61 +23,55 @@ const QuickCategories = () => {
 
 return (
   <div className="relative bg-white border-b">
-    <div className="max-w-7xl mx-auto px-4 py-4 relative">
 
-      {/* LEFT GRADIENT FADE */}
-      <div className="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-white to-transparent z-10" />
+    {/* LEFT GRADIENT */}
+    <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10" />
 
-      {/* RIGHT GRADIENT FADE */}
-      <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white to-transparent z-10" />
+    {/* RIGHT GRADIENT */}
+    <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
 
-      {/* SCROLL CONTAINER */}
-      <div className="flex gap-6 overflow-x-auto scrollbar-hide">
+    {/* SCROLL AREA */}
+    <div className="overflow-x-auto scrollbar-hide">
+      <div className="py-4">
+        <div className="flex gap-6 justify-center">
 
-        {/* 🔥 FIRST 7 TRENDING */}
-        {categories.slice(0, 7).map((cat) => (
+          {categories.slice(0, 7).map((cat) => (
+            <div
+              key={cat._id}
+              onClick={() => navigate(`/products?category=${cat._id}`)}
+              className="cursor-pointer min-w-[90px] flex flex-col items-center group"
+            >
+              <div className="w-16 h-16 rounded-full bg-gray-50 border overflow-hidden flex items-center justify-center transition group-hover:shadow-md group-hover:-translate-y-0.5">
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <p className="text-sm mt-2 font-medium text-gray-700 group-hover:text-blue-600 transition text-center">
+                {cat.name}
+              </p>
+            </div>
+          ))}
+
+          {/* MORE */}
           <div
-            key={cat._id}
-            onClick={() => navigate(`/products?category=${cat._id}`)}
+            onClick={() => navigate("/categories")}
             className="cursor-pointer min-w-[90px] flex flex-col items-center group"
           >
-            <div className="w-16 h-16 rounded-full bg-gray-50 border overflow-hidden flex items-center justify-center transition group-hover:shadow-md group-hover:-translate-y-0.5">
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="w-full h-full object-cover"
-              />
+            <div className="w-16 h-16 rounded-full border flex items-center justify-center text-xl text-gray-500 transition group-hover:bg-gray-100 group-hover:text-blue-600 group-hover:shadow-md">
+              +
             </div>
-            <p className="text-sm mt-2 font-medium text-gray-700 group-hover:text-blue-600 transition text-center">
-              {cat.name}
+            <p className="text-sm mt-2 font-medium text-gray-700 group-hover:text-blue-600 transition">
+              More
             </p>
           </div>
-        ))}
 
-        {/* ➕ MORE */}
-        <div
-          onClick={() => navigate("/categories")}
-          className="cursor-pointer min-w-[90px] flex flex-col items-center group"
-        >
-          <div className="w-16 h-16 rounded-full border flex items-center justify-center text-xl text-gray-500 transition group-hover:bg-gray-100 group-hover:text-blue-600 group-hover:shadow-md">
-            +
-          </div>
-          <p className="text-sm mt-2 font-medium text-gray-700 group-hover:text-blue-600 transition">
-            More
-          </p>
         </div>
-
       </div>
-
-      {/* DESKTOP SCROLL HINT ARROWS (VISUAL ONLY) */}
-      <div className="hidden md:flex absolute inset-y-0 left-2 items-center pointer-events-none text-gray-300 text-xl">
-        ‹
-      </div>
-      <div className="hidden md:flex absolute inset-y-0 right-2 items-center pointer-events-none text-gray-300 text-xl">
-        ›
-      </div>
-
     </div>
+
   </div>
 );
 

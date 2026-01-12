@@ -3,7 +3,20 @@ import api from "../../services/api";
 
 const AdminRatings = () => {
   const [products, setProducts] = useState([]);
+    const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
 
+    useEffect(() => {
+      const fetchProducts = async () => {
+        const data = await getProducts({ page });
+        setProducts(data.products);
+        setPages(data.pages);
+      };
+  
+      fetchProducts();
+    }, [page]);
+
+    
   useEffect(() => {
     api.get("/products/admin/ratings").then((res) => {
       setProducts(res.data);
@@ -70,6 +83,28 @@ const AdminRatings = () => {
           </div>
         </div>
       ))}
+      {/* ✅ PAGINATION */}
+        <div className="flex justify-center items-center gap-4 mt-8">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="px-4 py-2 border rounded disabled:opacity-50"
+          >
+            ← Prev
+          </button>
+
+          <span className="font-medium">
+            Page {page} of {pages}
+          </span>
+
+          <button
+            disabled={page === pages}
+            onClick={() => setPage(page + 1)}
+            className="px-4 py-2 border rounded disabled:opacity-50"
+          >
+            Next →
+          </button>
+        </div>
     </div>
   );
 };

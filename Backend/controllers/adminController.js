@@ -30,16 +30,22 @@ export const getAdminStats = async (req, res) => {
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
 
-    const totalRevenue = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+    // ✅ REVENUE ONLY FROM DELIVERED ORDERS
+    const revenueData = await Order.aggregate([
+      { $match: { orderStatus: "Delivered" } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalPrice" }
+        }
+      }
     ]);
 
     res.json({
       users: totalUsers,
       products: totalProducts,
       orders: totalOrders,
-      revenue: totalRevenue[0]?.total || 0
+      revenue: revenueData[0]?.total || 0
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

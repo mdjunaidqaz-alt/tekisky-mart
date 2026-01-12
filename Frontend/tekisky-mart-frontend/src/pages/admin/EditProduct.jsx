@@ -66,7 +66,7 @@ const EditProduct = () => {
     });
 
     alert("Product updated successfully");
-    navigate("/admin/products");
+    // navigate("/admin/products");
   };
 
   return (

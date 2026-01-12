@@ -35,44 +35,89 @@ export const createProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
 
-    const filter = {};
-    let sort = { createdAt: -1 };
+    let limit = 10; // home page
+    if (req.query.keyword || req.query.category) {
+      limit = 0; // unlimited for search & category
+    }
 
-    // 🔍 SEARCH
+    const skip = limit ? (page - 1) * limit : 0;
+
+    let products = [];
+    let totalProducts = 0;
+
+    // =========================
+    // 🔍 SEARCH MODE
+    // =========================
     if (req.query.keyword) {
-      filter.$text = { $search: req.query.keyword };
-      sort = { score: { $meta: "textScore" } };
+      // 1️⃣ Find best matched product
+      const bestMatch = await Product.findOne(
+        { $text: { $search: req.query.keyword } },
+        { score: { $meta: "textScore" } }
+      )
+        .sort({ score: { $meta: "textScore" } })
+        .populate("category", "name");
+
+      if (!bestMatch) {
+        return res.json({
+          products: [],
+          page: 1,
+          pages: 0,
+          totalProducts: 0
+        });
+      }
+
+      // 2️⃣ Fetch rest of same category (excluding best match)
+      const relatedProducts = await Product.find({
+        category: bestMatch.category._id,
+        _id: { $ne: bestMatch._id }
+      })
+        .populate("category", "name")
+        .sort({ createdAt: -1 });
+
+      // 3️⃣ Put searched product FIRST
+      products = [bestMatch, ...relatedProducts];
+      totalProducts = products.length;
     }
 
-    // 🏷️ CATEGORY
-    if (req.query.category) {
-      filter.category = req.query.category;
+    // =========================
+    // 🏷️ CATEGORY ONLY MODE
+    // =========================
+    else if (req.query.category) {
+      totalProducts = await Product.countDocuments({
+        category: req.query.category
+      });
+
+      products = await Product.find({ category: req.query.category })
+        .populate("category", "name")
+        .sort({ createdAt: -1 });
     }
 
-    const totalProducts = await Product.countDocuments(filter);
+    // =========================
+    // 🏠 HOME PAGE MODE
+    // =========================
+    else {
+      totalProducts = await Product.countDocuments();
 
-    const products = await Product.find(
-      filter,
-      req.query.keyword ? { score: { $meta: "textScore" } } : {}
-    )
-      .sort(sort) // 🔥 IMPORTANT
-      .populate("category", "name")
-      .skip(skip)
-      .limit(limit);
+      products = await Product.find()
+        .populate("category", "name")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+    }
 
     res.json({
       products,
       page,
-      pages: Math.ceil(totalProducts / limit),
-      totalProducts,
+      pages: limit ? Math.ceil(totalProducts / limit) : 1,
+      totalProducts
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 
 
