@@ -52,18 +52,45 @@ export const getAdminStats = async (req, res) => {
   }
 };
 
+// export const  = async (req, res) => {
+//   try {
+//     const orders = await Order.find({})
+//       .populate("user", "name email")
+//       .populate("orderItems.product", "name images price")
+//       .sort({ createdAt: -1 });
+
+//     res.json(orders);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({})
+    const page = Number(req.query.page) || 1;
+    const limit = 5; // 🔥 orders per page
+    const skip = (page - 1) * limit;
+
+    const totalOrders = await Order.countDocuments();
+
+    const orders = await Order.find()
       .populate("user", "name email")
       .populate("orderItems.product", "name images price")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    res.json(orders);
+    res.json({
+      orders,
+      page,
+      pages: Math.ceil(totalOrders / limit),
+      totalOrders
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 /**
  * @desc   Update order status

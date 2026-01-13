@@ -44,16 +44,31 @@ export const createCategory = async (req, res) => {
 // ===============================
 // USER: GET CATEGORIES
 // ===============================
+// controllers/categoryController.js
 export const getCategories = async (req, res) => {
-  const filter = {};
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5; // 👈 categories per page
+    const skip = (page - 1) * limit;
 
-  if (req.query.type) {
-    filter.type = req.query.type;
+    const totalCategories = await Category.countDocuments();
+
+    const categories = await Category.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      categories,
+      page,
+      pages: Math.ceil(totalCategories / limit),
+      totalCategories,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-
-  const categories = await Category.find(filter).sort({ name: 1 });
-  res.json(categories);
 };
+
 
 // ===============================
 // ADMIN: UPDATE CATEGORY

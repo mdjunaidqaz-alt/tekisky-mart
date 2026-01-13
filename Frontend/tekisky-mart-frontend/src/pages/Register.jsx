@@ -9,14 +9,29 @@ const Register = () => {
     password: ""
   });
 
+  const [emailError, setEmailError] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm({ ...form, [name]: value });
+
+    // ONLY @ condition
+    if (name === "email") {
+      if (!value.includes("@")) {
+        setEmailError(true);
+      } else {
+        setEmailError(false);
+      }
+    }
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if (emailError) return;
+
     try {
       const { data } = await axios.post(
         "http://localhost:5000/api/auth/register",
@@ -42,6 +57,7 @@ const Register = () => {
             type="text"
             name="name"
             placeholder="Full Name"
+            value={form.name}
             onChange={handleChange}
             className="
               w-full
@@ -61,8 +77,9 @@ const Register = () => {
             type="email"
             name="email"
             placeholder="Email Address"
+            value={form.email}
             onChange={handleChange}
-            className="
+            className={`
               w-full
               border
               rounded-lg
@@ -71,8 +88,8 @@ const Register = () => {
               text-sm
               focus:outline-none
               focus:ring-2
-              focus:ring-blue-500
-            "
+              ${emailError ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"}
+            `}
             required
           />
 
@@ -80,6 +97,7 @@ const Register = () => {
             type="password"
             name="password"
             placeholder="Password"
+            value={form.password}
             onChange={handleChange}
             className="
               w-full
@@ -113,17 +131,14 @@ const Register = () => {
           </button>
         </form>
 
-        {/* FOOTER TEXT */}
         <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <span className="text-blue-600 font-medium cursor-pointer hover:underline">
-            <Link
-              to="/login"
-              className="px-3 py-1.5 "
-            >
-              Login
-            </Link>
-          </span>
+          <Link
+            to="/login"
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Login
+          </Link>
         </p>
       </div>
     </div>

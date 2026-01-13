@@ -3,108 +3,86 @@ import api from "../../services/api";
 
 const AdminRatings = () => {
   const [products, setProducts] = useState([]);
-    const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
-    useEffect(() => {
-      const fetchProducts = async () => {
-        const data = await getProducts({ page });
+  useEffect(() => {
+    const fetchRatings = async () => {
+      try {
+        const { data } = await api.get(
+          `/products/admin/ratings?page=${page}`
+        );
+
         setProducts(data.products);
         setPages(data.pages);
-      };
-  
-      fetchProducts();
-    }, [page]);
+      } catch (error) {
+        console.error("Failed to load ratings");
+      }
+    };
 
-    
-  useEffect(() => {
-    api.get("/products/admin/ratings").then((res) => {
-      setProducts(res.data);
-    });
-  }, []);
+    fetchRatings();
+  }, [page]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 animate-fadeInUp">
-      <h1 className="text-2xl font-bold mb-8 text-gray-800">
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8">
         Product Ratings & Reviews
       </h1>
 
       {products.map((product) => (
-        <div
-          key={product._id}
-          className="bg-white border rounded-xl shadow-sm mb-8 overflow-hidden"
-        >
-          {/* PRODUCT HEADER */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 bg-gray-50">
-            <h2 className="text-lg font-semibold text-gray-800">
-              {product.name}
-            </h2>
-
-            <span className="text-sm font-medium text-yellow-600">
-              ⭐ Average Rating: {product.averageRating.toFixed(1)}
+        <div key={product._id} className="mb-8 border rounded-xl">
+          <div className="px-6 py-4 bg-gray-50 flex justify-between">
+            <h2 className="font-semibold">{product.name}</h2>
+            <span className="text-yellow-600">
+              ⭐ {product.averageRating.toFixed(1)}
             </span>
           </div>
 
-          {/* RATINGS */}
-          <div className="px-6 py-4">
+          <div className="p-6 space-y-4">
             {product.ratings.length === 0 ? (
-              <p className="text-gray-500 text-sm">
-                No ratings yet
-              </p>
+              <p>No ratings yet</p>
             ) : (
-              <div className="space-y-4">
-                {product.ratings.map((r, index) => (
-                  <div
-                    key={index}
-                    className="border rounded-lg p-4 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <p className="font-medium text-gray-800">
-                        {r.user?.name}
-                      </p>
-                      <span className="text-sm text-yellow-600 font-semibold">
-                        ⭐ {r.rating}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-gray-500 mt-1">
-                      {r.user?.email}
-                    </p>
-
-                    {r.comment && (
-                      <p className="mt-2 text-sm italic text-gray-700">
-                        “{r.comment}”
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
+              product.ratings.map((r, i) => (
+                <div key={i} className="border p-4 rounded">
+                  <p className="font-medium">
+                    {r.user?.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {r.user?.email}
+                  </p>
+                  <p className="text-yellow-600">⭐ {r.rating}</p>
+                  {r.comment && (
+                    <p className="italic">“{r.comment}”</p>
+                  )}
+                </div>
+              ))
             )}
           </div>
         </div>
       ))}
-      {/* ✅ PAGINATION */}
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-            className="px-4 py-2 border rounded disabled:opacity-50"
-          >
-            ← Prev
-          </button>
 
-          <span className="font-medium">
-            Page {page} of {pages}
-          </span>
+      {/* PAGINATION */}
+      <div className="flex justify-center gap-4 mt-8">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="px-4 py-2 border rounded"
+        >
+          ← Prev
+        </button>
 
-          <button
-            disabled={page === pages}
-            onClick={() => setPage(page + 1)}
-            className="px-4 py-2 border rounded disabled:opacity-50"
-          >
-            Next →
-          </button>
-        </div>
+        <span>
+          Page {page} of {pages}
+        </span>
+
+        <button
+          disabled={page === pages}
+          onClick={() => setPage(page + 1)}
+          className="px-4 py-2 border rounded"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 };

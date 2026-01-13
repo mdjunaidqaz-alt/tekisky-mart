@@ -7,15 +7,20 @@ const AdminCategories = () => {
   const [type, setType] = useState("regular");
   const [image, setImage] = useState(null);
   const [editingId, setEditingId] = useState(null);
+const [page, setPage] = useState(1);
+const [pages, setPages] = useState(1);
 
-  const fetchCategories = async () => {
-    const { data } = await api.get("/categories");
-    setCategories(data);
-  };
+
+const fetchCategories = async () => {
+  const { data } = await api.get(`/categories?page=${page}&limit=5`);
+  setCategories(data.categories || []);
+  setPages(data.pages);
+};
+
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [page]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -177,6 +182,29 @@ const AdminCategories = () => {
           </div>
         ))}
       </div>
+      {/* PAGINATION */}
+<div className="flex justify-center items-center gap-4 mt-8">
+  <button
+    disabled={page === 1}
+    onClick={() => setPage(page - 1)}
+    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+  >
+    ← Prev
+  </button>
+
+  <span className="font-medium text-gray-700">
+    Page {page} of {pages}
+  </span>
+
+  <button
+    disabled={page === pages}
+    onClick={() => setPage(page + 1)}
+    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+  >
+    Next →
+  </button>
+</div>
+
     </div>
   );
 };

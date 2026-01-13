@@ -13,21 +13,28 @@ const OrdersAdmin = () => {
   const [orders, setOrders] = useState([]);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      const { data } = await axios.get(
-        "http://localhost:5000/api/admin/orders",
-        {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
-      setOrders(data);
-    };
+const [page, setPage] = useState(1);
+const [pages, setPages] = useState(1);
 
-    fetchOrders();
-  }, []);
+
+useEffect(() => {
+  const fetchOrders = async () => {
+    const { data } = await axios.get(
+      `http://localhost:5000/api/admin/orders?page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
+
+    setOrders(data.orders);
+    setPages(data.pages);
+  };
+
+  fetchOrders();
+}, [page]);
+
 
   const updateStatus = async (orderId, status) => {
     try {
@@ -198,6 +205,30 @@ const OrdersAdmin = () => {
           </tbody>
         </table>
       </div>
+      {/* PAGINATION */}
+<div className="flex justify-center items-center gap-4 mt-6">
+  <button
+    disabled={page === 1}
+    // key={}
+    onClick={() => setPage(page - 1)}
+    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+  >
+    ← Prev
+  </button>
+
+  <span className="text-sm font-medium">
+    Page {page} of {pages}
+  </span>
+
+  <button
+    disabled={page === pages}
+    onClick={() => setPage(page + 1)}
+    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+  >
+    Next →
+  </button>
+</div>
+
     </div>
   );
 };

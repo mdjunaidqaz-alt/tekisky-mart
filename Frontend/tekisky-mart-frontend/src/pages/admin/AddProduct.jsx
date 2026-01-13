@@ -17,7 +17,7 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const { data } = await api.get("/categories");
-      setCategories(data);
+      setCategories(data.categories || []);
     };
     fetchCategories();
   }, []);
@@ -146,7 +146,8 @@ const AddProduct = () => {
             required
           >
             <option value="">Select Category</option>
-            {categories.map((cat) => (
+              {Array.isArray(categories) &&
+    categories.map((cat) => (
               <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>

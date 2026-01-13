@@ -33,10 +33,36 @@ export const getActiveBanners = async (req, res) => {
 // =======================
 // GET ALL BANNERS (ADMIN)
 // =======================
+// export const  = async (req, res) => {
+//   const banners = await Banner.find().sort({ createdAt: -1 });
+//   res.json(banners);
+// };
+
+// controllers/bannerController.js
 export const getAllBanners = async (req, res) => {
-  const banners = await Banner.find().sort({ createdAt: -1 });
-  res.json(banners);
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5; // banners per page
+    const skip = (page - 1) * limit;
+
+    const totalBanners = await Banner.countDocuments();
+
+    const banners = await Banner.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      banners,
+      page,
+      pages: Math.ceil(totalBanners / limit),
+      totalBanners
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
 
 // =======================
 // UPDATE BANNER (ADMIN)

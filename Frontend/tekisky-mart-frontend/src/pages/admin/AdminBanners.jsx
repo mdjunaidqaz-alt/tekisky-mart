@@ -6,15 +6,20 @@ const AdminBanners = () => {
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
+const [page, setPage] = useState(1);
+const [pages, setPages] = useState(1);
 
-  const fetchBanners = async () => {
-    const { data } = await api.get("/banners/admin");
-    setBanners(data);
-  };
+
+const fetchBanners = async () => {
+  const { data } = await api.get(`/banners/admin?page=${page}&limit=5`);
+  setBanners(data.banners || []);
+  setPages(data.pages);
+};
+
 
   useEffect(() => {
     fetchBanners();
-  }, []);
+  }, [page]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -141,6 +146,29 @@ const AdminBanners = () => {
           </div>
         ))}
       </div>
+      {/* PAGINATION */}
+<div className="flex justify-center items-center gap-4 mt-8">
+  <button
+    disabled={page === 1}
+    onClick={() => setPage(page - 1)}
+    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+  >
+    ← Prev
+  </button>
+
+  <span className="font-medium text-gray-700">
+    Page {page} of {pages}
+  </span>
+
+  <button
+    disabled={page === pages}
+    onClick={() => setPage(page + 1)}
+    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+  >
+    Next →
+  </button>
+</div>
+
     </div>
   );
 };

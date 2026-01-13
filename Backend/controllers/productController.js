@@ -264,16 +264,45 @@ export const rateProduct = async (req, res) => {
 // ==============================
 // ADMIN: GET ALL PRODUCT RATINGS
 // ==============================
+// export const  = async (req, res) => {
+//   try {
+//     const products = await Product.find({})
+//       .select("name ratings averageRating")
+//       .populate("ratings.user", "name email");
+
+//     res.json(products);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// controllers/productController.js
 export const getAllRatings = async (req, res) => {
   try {
-    const products = await Product.find({})
-      .select("name ratings averageRating")
-      .populate("ratings.user", "name email");
+    const page = Number(req.query.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
 
-    res.json(products);
+    const total = await Product.countDocuments({
+      "ratings.0": { $exists: true }
+    });
+
+    const products = await Product.find({
+      "ratings.0": { $exists: true }
+    })
+      .populate("ratings.user", "name email")
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      products,
+      page,
+      pages: Math.ceil(total / limit)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
